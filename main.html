@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crystal Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(270deg, #1a1a1a, #0f2027, #203a43, #2c5364);
+      background-size: 800% 800%;
+      animation: gradientShift 20s ease infinite;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .store-container {
+      text-align: center;
+      color: #ffffff;
+      max-width: 90%;
+      width: 500px;
+      padding: 40px 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .store-container:hover {
+      transform: scale(1.01);
+    }
+
+    .store-container h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      color: #00ffe7;
+      text-shadow: 0 0 12px #00ffe7, 0 0 20px #00ffe7;
+    }
+
+    .store-container p {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      color: #ccc;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .store-btn {
+      padding: 15px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 15px;
+      background: rgba(0, 255, 231, 0.1);
+      color: #00ffe7;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #00ffe7;
+      box-shadow: 0 0 10px rgba(0, 255, 231, 0.3);
+    }
+
+    .store-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 10%, transparent 70%);
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+
+    .store-btn:hover {
+      background: #00ffe7;
+      color: #000;
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00ffe7, 0 0 30px #00ffe7;
+    }
+
+    .social-links {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      z-index: 2;
+    }
+
+    .social-links a {
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #00ffe7;
+      border: 1px solid #00ffe7;
+      backdrop-filter: blur(10px);
+      transition: 0.3s ease;
+      box-shadow: 0 0 8px rgba(0, 255, 231, 0.3);
+    }
+
+    .social-links a:hover {
+      background: #00ffe7;
+      color: #000;
+      box-shadow: 0 0 20px #00ffe7, 0 0 30px #00ffe7;
+    }
+
+    @media (max-width: 500px) {
+      .store-container h1 {
+        font-size: 2.2rem;
+      }
+
+      .social-links {
+        flex-direction: column;
+        gap: 10px;
+        bottom: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="store-container">
+    <h1>Crystal Store</h1>
+    <br><br>
+    <div class="button-grid">
+      <button class="store-btn" onclick="location.href='roblox.html'" style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 48px;
+        padding: 0 16px;
+      ">
+        <img src="https://cdn3.emoji.gg/emojis/64126-roblox.png" width="24" height="24" alt="ROBLOX">
+        Roblox
+      </button>
+
+
+      <button class="store-btn" onclick="location.href='premium_account.html'">🧮 Premium Account</button>
+    </div>
+  </div>
+
+  <!-- Social Media Buttons (Outside Main Box) -->
+  <div class="social-links">
+    <a href="https://discord.gg/yKxXqSunYF" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: white;">
+      <img src="https://cdn3.emoji.gg/emojis/5542-discord-clyde-gif.gif" width="32" height="32" alt="discord_clyde_gif">
+      <span>Discord</span>
+    </a>
+    <a href="https://www.facebook.com/profile.php?id=61570589564961" target="_blank" style="display: inline-flex; align-items: center; text-decoration: none; color: white;">
+      <img src="https://cdn3.emoji.gg/emojis/1450-letterf.gif" width="32" height="32" alt="facebook_logo" style="margin-right: -4px;">
+      <span style="font-weight: bold;">acebook</span>
+    </a>
+    </a>
+  </div>
+</body>
+</html>

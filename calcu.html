@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Robux Tax Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1f1c2c, #928dab);
+      background-attachment: fixed;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .calculator-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    .toggle-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-buttons button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #555;
+      color: white;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .toggle-buttons button.active {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: #000;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 12px 15px;
+      font-size: 16px;
+      border-radius: 30px;
+      border: none;
+      outline: none;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    #result-box {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 15px;
+      min-height: 100px;
+      font-size: 16px;
+    }
+
+    #return-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 18px;
+      background: linear-gradient(to right, #f857a6, #ff5858);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      z-index: 100;
+      transition: background 0.3s;
+    }
+
+    #return-button:hover {
+      background: linear-gradient(to right, #ff5858, #f857a6);
+    }
+
+    @media (max-width: 500px) {
+      .calculator-box {
+        padding: 20px;
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button id="return-button" onclick="location.href='Roblox.html'">← Back</button>
+
+  <div class="calculator-box">
+    <h1>Robux Tax Calculator</h1>
+
+    <div class="toggle-buttons">
+      <button id="nct-button" class="active" onclick="setTaxType('NCT')">Not Covered</button>
+      <button id="ct-button" onclick="setTaxType('CT')">Covered</button>
+    </div>
+
+    <input type="text" id="price" placeholder="Enter Robux" oninput="updateResult()" />
+
+    <div id="result-box">
+      <div id="result">Enter Robux to calculate...</div>
+    </div>
+  </div>
+
+  <script>
+    let selectedTaxType = 'NCT';
+
+    function setTaxType(type) {
+      selectedTaxType = type;
+      document.getElementById('nct-button').classList.remove('active');
+      document.getElementById('ct-button').classList.remove('active');
+
+      document.getElementById(type.toLowerCase() + '-button').classList.add('active');
+      updateResult();
+    }
+
+    function validateInput(input) {
+      input = input.trim();
+      if (!input || !/^\d+$/.test(input)) return null;
+      const price = parseInt(input, 10);
+      return price > 0 ? price : null;
+    }
+
+    function updateResult() {
+      const input = document.getElementById("price").value;
+      const price = validateInput(input);
+      const resultBox = document.getElementById("result");
+
+      if (price === null) {
+        resultBox.innerHTML = `<p style="color: #ffaaaa;">Please enter a valid number</p>`;
+        return;
+      }
+
+      if (selectedTaxType === 'NCT') {
+        const received = Math.floor(price * 0.7);
+        resultBox.innerHTML = `
+          <p><strong>Type:</strong> Not Covered</p>
+          <p><strong>Robux Received:</strong> ${received}</p>
+        `;
+      } else {
+        const required = Math.ceil(price / 0.7);
+        resultBox.innerHTML = `
+          <p><strong>Type:</strong> Covered</p>
+          <p><strong>Robux to Charge:</strong> ${required}</p>
+        `;
+      }
+    }
+
+    window.onload = updateResult;
+  </script>
+</body>
+</html>
