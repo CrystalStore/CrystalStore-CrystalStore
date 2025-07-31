@@ -140,6 +140,39 @@
       50% { transform: translateY(-10px); }
     }
 
+    /* Button grid: always 2 columns */
+    .button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    /* Social links: always row, not stacked */
+    .social-links {
+      display: flex !important;
+      flex-direction: row !important;
+      gap: 20px !important;
+      justify-content: center;
+      align-items: center;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 20px;
+      position: fixed;
+    }
+    
+    /* Remove mobile stacking for both */
+    @media (max-width: 500px) {
+      .button-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+      }
+      .social-links {
+        flex-direction: row !important;
+        gap: 12px !important;
+        bottom: 15px;
+      }
+    }
+
     @keyframes pulseGlow {
       0%, 100% {
         box-shadow: 0 0 10px #00ffe7, 0 0 20px #00ffe7;
@@ -192,34 +225,57 @@
     const ctx = canvas.getContext('2d');
     let width, height;
     let particles = [];
-  
+
+    // Track mouse/touch position and activity
     let mouse = { x: -1000, y: -1000 };
     let mouseActive = 0;
     let mouseTargetActive = 0;
     let mouseTimer = null;
-  
-    canvas.addEventListener('mousemove', function(e) {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
+
+    function setMouse(x, y) {
+      mouse.x = x;
+      mouse.y = y;
       mouseTargetActive = 1;
       clearTimeout(mouseTimer);
       mouseTimer = setTimeout(() => {
         mouseTargetActive = 0;
       }, 80);
+    }
+
+    // Mouse events
+    canvas.addEventListener('mousemove', function(e) {
+      setMouse(e.clientX, e.clientY);
     });
     canvas.addEventListener('mouseleave', function() {
       mouse.x = -1000;
       mouse.y = -1000;
       mouseTargetActive = 0;
     });
-  
+
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', function(e) {
+      if (e.touches.length > 0) {
+        setMouse(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, {passive: true});
+    canvas.addEventListener('touchmove', function(e) {
+      if (e.touches.length > 0) {
+        setMouse(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, {passive: true});
+    canvas.addEventListener('touchend', function(e) {
+      mouse.x = -1000;
+      mouse.y = -1000;
+      mouseTargetActive = 0;
+    });
+
     function resize() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     }
     window.addEventListener('resize', resize);
     resize();
-  
+
     for (let i = 0; i < 220; i++) {
       particles.push({
         x: Math.random() * width,
@@ -229,50 +285,33 @@
         radius: Math.random() * 2.2 + 0.5
       });
     }
-  
+
     function draw() {
       ctx.clearRect(0, 0, width, height);
       mouseActive += (mouseTargetActive - mouseActive) * 0.1;
-  
+
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-  
-        // 🧲 Pull to mouse
+
+        // Magnet/spring pull-in effect (works for mouse/touch)
         const dxMouse = mouse.x - p.x;
         const dyMouse = mouse.y - p.y;
         const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
-  
+
         if (distMouse < 160 && mouseActive > 0.01) {
-          const spring = (1 - distMouse / 160) * 0.06 * mouseActive;
-          const damping = 0.88;
-          p.vx = p.vx * damping + dxMouse * spring * 0.04;
-          p.vy = p.vy * damping + dyMouse * spring * 0.04;
+          const spring = (1 - distMouse / 160) * 0.18 * mouseActive;
+          const damping = 0.82;
+          p.vx = p.vx * damping + dxMouse * spring * 0.09;
+          p.vy = p.vy * damping + dyMouse * spring * 0.09;
         }
-  
-        // ⛔️ Repel from other particles if too close
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dx = p2.x - p.x;
-          const dy = p2.y - p.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const minDist = 5;
-          if (dist < minDist && dist > 0) {
-            const overlap = (minDist - dist) / 2;
-            const nx = dx / dist;
-            const ny = dy / dist;
-            p.x -= nx * overlap;
-            p.y -= ny * overlap;
-            p2.x += nx * overlap;
-            p2.y += ny * overlap;
-          }
-        }
-  
+
         p.x += p.vx;
         p.y += p.vy;
+
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
-  
-        // 🔵 Draw dot
+
+        // Draw background dot
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = '#00ffe7';
@@ -280,8 +319,8 @@
         ctx.shadowBlur = 8;
         ctx.fill();
         ctx.shadowBlur = 0;
-  
-        // 🔗 Draw line to mouse
+
+        // Connect particle to mouse/touch if close
         if (mouse.x > 0 && mouse.y > 0 && distMouse < 120) {
           let alpha = 1 - distMouse / 120;
           alpha = Math.min(alpha + mouseActive * 0.5, 1);
@@ -292,8 +331,8 @@
           ctx.lineWidth = distMouse < 60 ? 2 : 1;
           ctx.stroke();
         }
-  
-        // 🔗 Connect particles
+
+        // Connect particles to each other
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dx = p.x - p2.x;
@@ -303,13 +342,13 @@
             const mx = (p.x + p2.x) / 2;
             const my = (p.y + p2.y) / 2;
             const mouseDist = Math.sqrt((mouse.x - mx) ** 2 + (mouse.y - my) ** 2);
-  
+
             let alpha = 1 - dist / 120;
             if (mouseDist < 100) {
               alpha += (1 - mouseDist / 100) * 0.7;
             }
             alpha = Math.min(alpha, 1);
-  
+
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
@@ -319,10 +358,10 @@
           }
         }
       }
-  
+
       requestAnimationFrame(draw);
     }
-  
+
     draw();
   </script>
   
