@@ -18,16 +18,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(270deg, #1a1a1a, #0f2027, #203a43, #2c5364);
-      background-size: 800% 800%;
-      animation: gradientShift 20s ease infinite;
+      background: #000;
+      overflow: hidden;
       position: relative;
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
     }
 
     .store-container {
@@ -42,6 +35,7 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 8px 40px rgba(0,0,0,0.4);
       transition: transform 0.3s ease;
+      z-index: 1;
     }
 
     .store-container:hover {
@@ -53,12 +47,7 @@
       margin-bottom: 10px;
       color: #00ffe7;
       text-shadow: 0 0 12px #00ffe7, 0 0 20px #00ffe7;
-    }
-
-    .store-container p {
-      font-size: 1.1rem;
-      margin-bottom: 30px;
-      color: #ccc;
+      animation: floaty 3s ease-in-out infinite;
     }
 
     .button-grid {
@@ -81,6 +70,14 @@
       overflow: hidden;
       border: 1px solid #00ffe7;
       box-shadow: 0 0 10px rgba(0, 255, 231, 0.3);
+      animation: pulseGlow 2.5s infinite;
+    }
+
+    .store-btn:hover {
+      background: #00ffe7;
+      color: #000;
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00ffe7, 0 0 30px #00ffe7;
     }
 
     .store-btn::before {
@@ -93,13 +90,6 @@
       background: radial-gradient(circle, rgba(255,255,255,0.2) 10%, transparent 70%);
       transform: rotate(45deg);
       pointer-events: none;
-    }
-
-    .store-btn:hover {
-      background: #00ffe7;
-      color: #000;
-      transform: scale(1.05);
-      box-shadow: 0 0 20px #00ffe7, 0 0 30px #00ffe7;
     }
 
     .social-links {
@@ -122,6 +112,9 @@
       border: 1px solid #00ffe7;
       backdrop-filter: blur(10px);
       transition: 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       box-shadow: 0 0 8px rgba(0, 255, 231, 0.3);
     }
 
@@ -135,48 +128,204 @@
       .store-container h1 {
         font-size: 2.2rem;
       }
-
       .social-links {
         flex-direction: column;
         gap: 10px;
         bottom: 15px;
       }
     }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 10px #00ffe7, 0 0 20px #00ffe7;
+      }
+      50% {
+        box-shadow: 0 0 20px #00ffe7, 0 0 40px #00ffe7;
+      }
+    }
+
+    canvas#bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
   </style>
 </head>
 <body>
+
+  <canvas id="bgCanvas"></canvas>
+
   <div class="store-container">
     <h1>Crystal Store</h1>
     <br><br>
     <div class="button-grid">
-      <button class="store-btn" onclick="location.href='roblox.html'" style="
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        height: 48px;
-        padding: 0 16px;
-      ">
-        <img src="https://cdn3.emoji.gg/emojis/64126-roblox.png" width="24" height="24" alt="ROBLOX">
+      <button class="store-btn" onclick="location.href='roblox.html'">
+        <img src="https://cdn3.emoji.gg/emojis/64126-roblox.png" width="24" height="24" alt="roblox">
         Roblox
       </button>
-
-
       <button class="store-btn" onclick="location.href='premium_account.html'">🧮 Premium Account</button>
     </div>
   </div>
 
-  <!-- Social Media Buttons (Outside Main Box) -->
   <div class="social-links">
-    <a href="https://discord.gg/yKxXqSunYF" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: white;">
-      <img src="https://cdn3.emoji.gg/emojis/5542-discord-clyde-gif.gif" width="32" height="32" alt="discord_clyde_gif">
+    <a href="https://discord.gg/yKxXqSunYF" target="_blank">
+      <img src="https://cdn3.emoji.gg/emojis/5542-discord-clyde-gif.gif" width="32" height="32" alt="discord">
       <span>Discord</span>
     </a>
-    <a href="https://www.facebook.com/profile.php?id=61570589564961" target="_blank" style="display: inline-flex; align-items: center; text-decoration: none; color: white;">
-      <img src="https://cdn3.emoji.gg/emojis/1450-letterf.gif" width="32" height="32" alt="facebook_logo" style="margin-right: -4px;">
-      <span style="font-weight: bold;">acebook</span>
+    <a href="https://www.facebook.com/profile.php?id=61570589564961" target="_blank" style="display: flex; align-items: center; text-decoration: none; color: white;">
+      <img src="https://cdn3.emoji.gg/emojis/1450-letterf.gif" width="24" height="24" alt="facebook" style="margin-right: -8px;">
+      <span style="font-size: 18px;">acebook</span>
     </a>
-    </a>
+
   </div>
+
+  <script>
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+  
+    let mouse = { x: -1000, y: -1000 };
+    let mouseActive = 0;
+    let mouseTargetActive = 0;
+    let mouseTimer = null;
+  
+    canvas.addEventListener('mousemove', function(e) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouseTargetActive = 1;
+      clearTimeout(mouseTimer);
+      mouseTimer = setTimeout(() => {
+        mouseTargetActive = 0;
+      }, 80);
+    });
+    canvas.addEventListener('mouseleave', function() {
+      mouse.x = -1000;
+      mouse.y = -1000;
+      mouseTargetActive = 0;
+    });
+  
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+  
+    for (let i = 0; i < 220; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        radius: Math.random() * 2.2 + 0.5
+      });
+    }
+  
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      mouseActive += (mouseTargetActive - mouseActive) * 0.1;
+  
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+  
+        // 🧲 Pull to mouse
+        const dxMouse = mouse.x - p.x;
+        const dyMouse = mouse.y - p.y;
+        const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+  
+        if (distMouse < 160 && mouseActive > 0.01) {
+          const spring = (1 - distMouse / 160) * 0.06 * mouseActive;
+          const damping = 0.88;
+          p.vx = p.vx * damping + dxMouse * spring * 0.04;
+          p.vy = p.vy * damping + dyMouse * spring * 0.04;
+        }
+  
+        // ⛔️ Repel from other particles if too close
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dx = p2.x - p.x;
+          const dy = p2.y - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const minDist = 5;
+          if (dist < minDist && dist > 0) {
+            const overlap = (minDist - dist) / 2;
+            const nx = dx / dist;
+            const ny = dy / dist;
+            p.x -= nx * overlap;
+            p.y -= ny * overlap;
+            p2.x += nx * overlap;
+            p2.y += ny * overlap;
+          }
+        }
+  
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+  
+        // 🔵 Draw dot
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#00ffe7';
+        ctx.shadowColor = '#00ffe7';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+  
+        // 🔗 Draw line to mouse
+        if (mouse.x > 0 && mouse.y > 0 && distMouse < 120) {
+          let alpha = 1 - distMouse / 120;
+          alpha = Math.min(alpha + mouseActive * 0.5, 1);
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.strokeStyle = `rgba(0,255,231,${alpha})`;
+          ctx.lineWidth = distMouse < 60 ? 2 : 1;
+          ctx.stroke();
+        }
+  
+        // 🔗 Connect particles
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dx = p.x - p2.x;
+          const dy = p.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            const mx = (p.x + p2.x) / 2;
+            const my = (p.y + p2.y) / 2;
+            const mouseDist = Math.sqrt((mouse.x - mx) ** 2 + (mouse.y - my) ** 2);
+  
+            let alpha = 1 - dist / 120;
+            if (mouseDist < 100) {
+              alpha += (1 - mouseDist / 100) * 0.7;
+            }
+            alpha = Math.min(alpha, 1);
+  
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(0,255,231,${alpha})`;
+            ctx.lineWidth = mouseDist < 100 ? 2 : 1;
+            ctx.stroke();
+          }
+        }
+      }
+  
+      requestAnimationFrame(draw);
+    }
+  
+    draw();
+  </script>
+  
+
 </body>
 </html>
